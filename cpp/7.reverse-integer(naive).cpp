@@ -82,13 +82,18 @@ public:
         // and here
         // The end iterator is past the last character so we need to step back for a valid swap.
         auto backward = --chars.end();
-        // Don't move the negative sign; otherwise let any invalid strings fail in int parsing.
-        // Additionally it's not specified in the problem if positive signs may be included.
-        // We won't assume they are, but this would be one of our first questions.
+        // Don't move the negative sign
         if (*forward == '-') {
           ++forward;
         }
-        // If the string has one character then no swap will occur
+        // If the string has one character then no swap will occur.
+        //  Notice that if forward is at character 5 and backward is at character 6, then
+        // ++forward goes to character 6 and --backward goes to character 5.
+        // If we used forward != backward as the condition then the loop won't terminate until
+        // we iterate out of range. 
+        // Accessing an out of range iterator results in undefined behavior,
+        // see https://en.cppreference.com/w/cpp/named_req/Iterator "Dereferencable Iterators"
+        // and https://stackoverflow.com/a/37209786/9945076.
         while (forward < backward) {
           const char c = *backward;
           *backward = *forward;
@@ -101,8 +106,7 @@ public:
 
         try {
           /**
-           * On returning from multiple execution paths:
-           * https://stackoverflow.com/questions/36707/should-a-function-have-only-one-return-statement
+           * On returning from multiple execution paths, see https://stackoverflow.com/a/733858/9945076
            * From Code Complete 17.1:
            *  Minimize the number of returns in each routine. It's harder to understand a routine if, 
            *  reading it at the bottom, you're unaware of the possibility that it returned somewhere above.
