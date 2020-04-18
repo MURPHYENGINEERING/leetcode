@@ -1,47 +1,60 @@
-/*
-Runtime: 8 ms
-Memory Usage: 8.5 MB
+/**
+ * @lc app=leetcode id=1 lang=cpp
+ *
+ * [1] Two-Sum
+ * https://leetcode.com/problems/two-sum/
+ * 
+ * Given an array of integers, return indices of the two numbers 
+ * such that they add up to a specific target.
+ * 
+ * You may assume that each input would have exactly one solution, 
+ * and you may not use the same element twice.
+ * 
+ * Example:
+ * 
+ *   Given nums = [2, 7, 11, 15], target = 9,
+ * 
+ *   Because nums[0] + nums[1] = 2 + 7 = 9, return [0, 1].
+ */
 
-https://leetcode.com/problems/two-sum/
+/**
+ * Runtime: 8 ms
+ * Memory Usage: 8.5 MB
+ * 
+ * O(n) solution:
+ * 
+ * Define the complement by
+ *  num + complement = target
+ * 
+ * For each num
+ * 1. Compute complement = target - num
+ * 2. Check if map contains complement in keys
+ *    - Yes: return (current num index, complement index from map value)
+ * 3. Insert (current num, current index)
+ */
 
-Given an array of integers, return indices of the two numbers 
-such that they add up to a specific target.
+#include <vector>
+#include <unordered_map>
+// domain_error
+#include <stdexcept>
 
-You may assume that each input would have exactly one solution, 
-and you may not use the same element twice.
-
-Example:
-
-  Given nums = [2, 7, 11, 15], target = 9,
-
-  Because nums[0] + nums[1] = 2 + 7 = 9, return [0, 1].
-*/
-
+// @lc code=start
 // If a class is not designed to be extended then clarify that by marking it final
 class Solution final {
 public:
   // Do use const correctness: https://isocpp.org/wiki/faq/const-correctness
   // Do return stl types by value like this; the compiler can use
   // return value optimization and allocate the vector in the caller's context.
-  vector<int> twoSum(const vector<int>& nums, const int target) const {
-    // Define the complement by
-    //  num + complement = target
-    //
-    // For each num
-    // 1. Compute complement = target - num
-    // 2. Check if map contains complement in keys
-    //    - Yes: return (current num index, complement index from map value)
-    // 3. Insert (current num, current index)
-    
+  std::vector<int> twoSum(const std::vector<int>& nums, const int target) const {    
     // The map value indexes into a vector; 
     // this is the most portable storage type for such an index.
-    using index_type = vector<int>::size_type;
+    using index_type = std::vector<int>::size_type;
     
     // Key: an element of the input vector
     // Value: the index of that element in the vector
     // const correctness: keys are const by default,
     //  and the internal implementation doesn't allow them to be declared const here.
-    unordered_map<int, const index_type> complements;
+    std::unordered_map<int, const index_type> complements;
     
     // You'll often see nums.size() moved outside of the loop condition.
     // If that optimizes your code then the compiler will do it.
@@ -50,7 +63,7 @@ public:
       // Do use local variables like this for clarity.
       // Don't think you're optimizing anything by inlining the subtraction;
       // if the local variable can be optimized away the compiler will do it.
-      const int complement = target - nums[i];
+      const auto complement = target - nums[i];
       // One of the first questions we should ask is whether the input contains
       // negative or zero values. It's not specified, and in fact it does; but if
       // the input was only positive then we could avoid inserting or searching
@@ -91,6 +104,7 @@ public:
     // This is an issue of "undefined behavior given the specified constraints,"
     // not a problem with our code. Don't expose the caller to implementation
     // details that may be irrelevant to them and are subject to change.
-    throw domain_error("The input doesn't contain any {a,b} such that a + b = target");
+    throw std::domain_error("The input doesn't contain any {a,b} such that a + b = target");
   }
 };
+// @lc code=end
