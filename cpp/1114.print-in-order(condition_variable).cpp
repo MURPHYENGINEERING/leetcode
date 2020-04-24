@@ -58,7 +58,9 @@ private:
       // std::unique_lock facilitates manual locking and unlocking. It's movable,
       // but not copyable, so it can't be accidentally duplicated and used to deadlock.
       std::unique_lock lock(stoplight_mtx);
-      stoplight.wait(lock, [&] { return released_count == count; });
+      // Naive to the implementation of std::condition_variable::wait,
+      // we run our own predicate loop.
+      stoplight.wait(lock, [=] { return released_count == count; });
 
       then();
 
