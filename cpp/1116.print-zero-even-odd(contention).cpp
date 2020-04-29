@@ -3,7 +3,6 @@
 // Memory: 6.8 MB
 
 #include <mutex>
-#include <atomic>
 #include <condition_variable>
 
 
