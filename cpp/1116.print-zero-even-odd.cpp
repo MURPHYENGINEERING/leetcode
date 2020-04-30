@@ -18,6 +18,8 @@ public:
     while (!should_quit()) {
       print_number(0);
       
+      // We implement the branching logic here so that we only ever wake a thread
+      // that will pass its predicate and do work.
       if (is_turn(Turn::Even)) {
         even_barrier_.notify_one();
       } else {
@@ -64,7 +66,7 @@ private:
     std::unique_lock lock(turn_mtx_);
 
     while (!should_quit()) {
-      // Release lock so zero can delegate
+      // Release lock so zero thread can delegate
       barrier.wait(lock, [&] { return should_quit() || is_turn(turn_to_take); });
       if (should_quit()) return;
       
@@ -82,10 +84,13 @@ private:
   int n_ = 1;  
   bool turn_is_completed{false};
   
+  // All threads share the two state fields and need to be synchronized.
   std::mutex turn_mtx_;
-  
+  // The delegation thread blocks here while waiting for the delegated thread to finish
   std::condition_variable zero_barrier_;
-  
+  // Each thread blocks separately so the appropriate one can be woken by the delegator.
+  // If we had more work conditions we'd be looking at a priority queue or map for these,
+  // depending on what those conditions were.
   std::condition_variable even_barrier_;
   std::condition_variable odd_barrier_;
 };
